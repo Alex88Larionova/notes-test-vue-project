@@ -1,138 +1,130 @@
 <script setup>
-import { rewriteDefault } from "@vue/compiler-sfc";
-import { ref, computed } from "vue";
+import { ref, computed } from 'vue';
 
+const colorCollection = [
+  { id: 1, name: 'blue', textColor: 'black', color: 'rgb(51, 105, 255)' },
+  { id: 2, name: 'yellow', textColor: 'black', color: 'rgb(255, 218, 71)' },
+  { id: 3, name: 'white', textColor: 'black', color: 'rgb(247, 245, 245)' },
+  { id: 4, name: 'plum', textColor: 'black', color: 'rgb(174, 59, 118)' },
+  { id: 5, name: 'azure', textColor: 'black', color: 'rgb(10, 235, 175)' },
+  { id: 6, name: 'peach', textColor: 'black', color: 'rgb(255, 119, 70)' },
+  { id: 7, name: 'black', textColor: 'white', color: 'rgb(14, 18, 27)' }
+];
 
-
-const colorCollection = [{name: 'blue', color: 'rgb(51, 105, 255)'},
-{name: 'yellow', color: 'rgb(255, 218, 71)'},
-{name: 'white', color: 'rgb(247, 245, 245)'},
-{name: 'plum', color: 'rgb(174, 59, 118)'},
-{name: 'azure', color: 'rgb(10, 235, 175)'},
-{name: 'peach', color: 'rgb(255, 119, 70)'},
-{name: 'black', color: 'rgb(14, 18, 27)'}]
-
-const search = ref("");
+const search = ref('');
 const notes = ref([]);
-const noteEditor = ref({ title: "", content: "", backgroundColor: ""});
+const noteEditor = ref({ title: '', content: '', backgroundColor: '' });
 const filteredNoted = computed(() =>
-  notes.value.filter((note) => noteFilter(note))
+  notes.value.filter(note => noteFilter(note))
 );
 
-function noteFilter(note) {
-  const isEmpty = search.value === "";
+function noteFilter (note) {
+  const isEmpty = search.value === '';
   const titleMatch = note.title.includes(search.value);
   const contentMatch = note.content.includes(search.value);
   return isEmpty || titleMatch || contentMatch;
 }
 
-function addNoteButton() {
+function addNoteButton () {
   addNote();
   clearEditor();
 }
 
-function addNote() {
+function addNote () {
   notes.value.push({
+    id: notes.value.length + 1,
     title: noteEditor.value.title,
     content: noteEditor.value.content,
     backgroundColor: noteEditor.value.backgroundColor
   });
-  console.log(notes.value.length)
-  console.log(notes.value)
+  console.log(notes.value.length);
+  console.log(notes.value);
 }
 
-function addColorButton(i){
-  noteEditor.value.backgroundColor =  colorCollection[i].color
-  console.log(noteEditor.value.backgroundColor)
+function addColorButton (colorName) {
+  noteEditor.value.backgroundColor = colorCollection.find(color => color.name === colorName).color;
 }
 
 
-function deleteNoteButton(i) {
-  deleteNote(i)
+function deleteNoteButton (noteId) {
+  deleteNote(noteId);
 }
 
-function deleteNote(i) {
-  notes.value.splice(i,1)
+function deleteNote (noteId) {
+  const noteIndex = notes.value.findIndex(note => note.id === noteId);
+  notes.value.splice(noteIndex, 1);
 }
 
-function clearEditor() {
-  noteEditor.value.title = "";
-  noteEditor.value.content = "";
+function clearEditor () {
+  noteEditor.value.title = '';
+  noteEditor.value.content = '';
 }
 </script>
-
+  
 <template>
   <!-- Search -->
-  <input v-model="search" id="app__search" type="text" placeholder="search" />
+  <input
+    id="app__search"
+    v-model="search"
+    type="text"
+    placeholder="search"
+  >
 
   <!-- Editor -->
   <div id="app__editor">
     <h1>Редактор заметок</h1>
-    <div class="app__colors">  
+    <div class="app__colors">
+      <input
+        v-for="item in colorCollection"
+        id="app__editor-color-blue"
+        class="app__editor-color"
+        type="button"
+        :style="{
+          'background-color': item.color
+        }"
+        :class="{
+          'app__editor-color--active': noteEditor.backgroundColor === item.color
+        }"
+        @click="addColorButton(item.name)"
+      >
+    </div>
     <input
-    class="app__editor-color"
-    id="app__editor-color-blue"
-    type = 'button'
-    :style="{'background-color': 'rgb(51, 105, 255)'}"
-    @click="addColorButton(0)">
-    <input
-    class="app__editor-color"
-    id="app__editor-color-yellow"
-    type = 'button'
-    :style="{'background-color': 'rgb(255, 218, 71)'}"
-    @click="addColorButton(1)">
-    <input
-    class="app__editor-color"
-    id="app__editor-color-white"
-    type = 'button'
-    @click="addColorButton(2)">
-    <input
-    v-model="noteEditor.color"
-    class="app__editor-color"
-    id="app__editor-color-plum"
-    type = 'button'
-    @click="addColorButton(3)">
-    <input
-    class="app__editor-color"
-    id="app__editor-color-azure"
-    type = 'button'
-    @click="addColorButton(4)">
-    <input
-    class="app__editor-color"
-    id="app__editor-color-peach"
-    type = 'button'
-    @click="addColorButton(5)">
-    <input
-     class="app__editor-color"
-    id="app__editor-color-black"
-    type = 'button'
-    @click="addColorButton(6)">
-    
-  </div>
-  <input
-      v-model="noteEditor.title"
       id="app__editor-title"
-      type="text"
-      placeholder="search"/>
-    <input
-      v-model="noteEditor.content"
-      id="app__editor-content"
+      v-model="noteEditor.title"
       type="text"
       placeholder="search"
-    />
-    <button id="app__add-note-button" @click="addNoteButton">
+    >
+    <input
+      id="app__editor-content"
+      v-model="noteEditor.content"
+      type="text"
+      placeholder="search"
+    >
+    <button
+      id="app__add-note-button"
+      @click="addNoteButton"
+    >
       Создать заметку
     </button>
   </div>
-  
+
   <!-- Notes -->
   <div id="app__editor">
-    <div class="app__note" 
-    v-for="(note, i) in filteredNoted"
-    :style = "{'background-color':noteEditor.backgroundColor}"
+    <div
+      v-for="(note, i) in filteredNoted"
+      class="app__note"
+      :style="{
+        'background-color': note.backgroundColor,
+        'color': 'black'
+      }"
     >
       <div class="app__note-content">
-        <button class="app__note-delete-button" @click="deleteNoteButton(i)">&#215</button>
+        <button
+          class="app__note-delete-button"
+          @click="deleteNoteButton(note.id)"
+        >
+          &#215
+        </button>
         <div class="app__note-title">
           {{ note.title }}
         </div>
@@ -143,9 +135,8 @@ function clearEditor() {
     </div>
   </div>
 </template>
-
+  
 <style>
-
 #app__search {
   width: 200px;
   margin: 0;
@@ -156,12 +147,12 @@ function clearEditor() {
   margin-top: 20px;
 }
 
-#app__editor h1{
+#app__editor h1 {
   font-size: 16px;
   text-align: center;
 }
 
-#app__editor  {
+#app__editor {
   display: flex;
   flex-direction: column;
   width: 200px;
@@ -198,12 +189,12 @@ function clearEditor() {
 
 .app__editor-color {
   cursor: pointer;
-margin-left: 2px;
-padding: 0px;
-width: 20px;
-height: 20px;
-border: 0;
-border-radius: 50%;
+  margin-left: 2px;
+  padding: 0px;
+  width: 20px;
+  height: 20px;
+  border: 0;
+  border-radius: 50%;
 }
 
 .app__editor-color:hover {
@@ -212,6 +203,10 @@ border-radius: 50%;
 
 .app__editor-color:active {
   transform: scale(0.9);
+}
+
+.app__editor-color--active {
+  border: 2px solid black;
 }
 
 #app__editor-color-blue {
@@ -241,7 +236,6 @@ border-radius: 50%;
 #app__editor-color-black {
   background-color: rgb(14, 18, 27);
 }
-
 </style>
 
 <!-- :style = "{'background-color':backgroundColor.value}" -->
