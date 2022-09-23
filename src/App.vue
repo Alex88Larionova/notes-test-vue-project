@@ -2,26 +2,11 @@
 import { ref, computed } from "vue";
 import AppSearch from "./components/AppSearch/AppSearch.vue";
 import AppNotes from "./components/AppNotes/AppNotes.vue";
+import AppNoteEditor from "./components/AppNoteEditor/AppNoteEditor.vue";
 
-const colorCollection = [
-  { id: 1, name: "blue", textColor: "black", color: "rgb(51, 105, 255)" },
-  { id: 2, name: "yellow", textColor: "black", color: "rgb(255, 218, 71)" },
-  { id: 3, name: "white", textColor: "black", color: "rgb(247, 245, 245)" },
-  { id: 4, name: "plum", textColor: "black", color: "rgb(174, 59, 118)" },
-  { id: 5, name: "azure", textColor: "black", color: "rgb(10, 235, 175)" },
-  { id: 6, name: "peach", textColor: "black", color: "rgb(255, 119, 70)" },
-  { id: 7, name: "black", textColor: "white", color: "rgb(14, 18, 27)" },
-];
-
+const showNoteEditor = ref(false);
 const search = ref("");
 const notes = ref([]);
-const noteEditor = ref({
-  title: "",
-  content: "",
-  backgroundColor: "",
-  textColor: "",
-  nameColor: "",
-});
 const filteredNoted = computed(() =>
   notes.value.filter((note) => noteFilter(note))
 );
@@ -33,86 +18,14 @@ function noteFilter(note) {
   const colorMatch = note.nameColor.includes(search.value);
   return isEmpty || titleMatch || contentMatch || colorMatch;
 }
-
-function addNoteButton() {
-  addNote();
-  clearEditor();
-}
-
-function addNote() {
-  notes.value.push({
-    id: notes.value.length + 1,
-    title: noteEditor.value.title,
-    content: noteEditor.value.content,
-    backgroundColor: noteEditor.value.backgroundColor,
-    textColor: noteEditor.value.textColor,
-    nameColor: noteEditor.value.nameColor,
-  });
-  console.log(notes.value.length);
-  console.log(notes.value);
-}
-
-function addColorButton(colorName) {
-  noteEditor.value.backgroundColor = colorCollection.find(
-    (color) => color.name === colorName
-  ).color;
-  noteEditor.value.textColor = colorCollection.find(
-    (color) => color.name === colorName
-  ).textColor;
-  noteEditor.value.nameColor = colorCollection.find(
-    (color) => color.name === colorName
-  ).name;
-}
-
-function clearEditor() {
-  noteEditor.value.title = "";
-  noteEditor.value.content = "";
-}
 </script>
 
 <template>
   <div class="app__title">Notes</div>
   <AppSearch :test="search" />
   <AppNotes :filteredNoted="filteredNoted" :notes="notes" />
-
-  <div id="app__editor">
-    <!-- Editor -->
-    <button class="app__note-editor-button">+</button>
-    <h1>Редактор заметок</h1>
-    <div class="app__colors">
-      <input
-        v-for="item in colorCollection"
-        id="app__editor-color-blue"
-        class="app__editor-color"
-        type="button"
-        :style="{
-          'background-color': item.color,
-        }"
-        :class="{
-          'app__editor-color--active':
-            noteEditor.backgroundColor === item.color,
-        }"
-        @click="addColorButton(item.name)"
-      />
-    </div>
-    <input
-      id="app__editor-title"
-      v-model="noteEditor.title"
-      type="text"
-      placeholder="Title..."
-    />
-    <input
-      id="app__editor-content"
-      v-model="noteEditor.content"
-      type="text"
-      placeholder="Content..."
-    />
-    <button id="app__add-note-button" @click="addNoteButton">
-      Создать заметку
-    </button>
-  </div>
-
-  <!-- Notes -->
+  <AppNoteEditor v-if="showNoteEditor" :notes="notes" :showNoteEditor="showNoteEditor" @closeNote="showNoteEditor = false"/>
+  <button class="app__note-editor-button" @click="showNoteEditor = true">+</button>
 </template>
 
 <style>
@@ -160,42 +73,6 @@ body {
   box-shadow: 5px 5px 15px var(--app-notes-shadow-color);
 }
 
-.app__title {
-  font-size: 24px;
-  font-weight: 600;
-  margin: 0px 10px;
-}
-
-#app__editor-title {
-  background-color: var(--app-input-background-color);
-  border: 0;
-  margin-bottom: 5px;
-  padding: 5px;
-  border-radius: 15px;
-}
-
-#app__editor-content {
-  background-color: var(--app-input-background-color);
-  border: 0;
-  padding: 5px;
-  border-radius: 15px;
-}
-
-#app__editor h1 {
-  font-size: 16px;
-  text-align: center;
-}
-
-#app__editor {
-  margin-left: 10px;
-  background-color: var(--app-background-color);
-  width: 200px;
-  height: 200px;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-}
-
 .app__note-delete-button {
   cursor: pointer;
   z-index: 1;
@@ -211,47 +88,5 @@ body {
 
 .app__note-delete-button:hover {
   transform: scale(0.9);
-}
-
-.app__colors {
-  display: flex;
-  justify-content: center;
-  flex-direction: row;
-  width: 200px;
-  margin: 0px;
-  padding: 0px;
-  margin-bottom: 10px;
-}
-
-.app__editor-color {
-  cursor: pointer;
-  margin-left: 2px;
-  padding: 0px;
-  width: 20px;
-  height: 20px;
-  border: 0;
-  border-radius: 50%;
-}
-
-.app__editor-color:hover {
-  border: solid 2px var(--app-buttons-shadow-color);
-}
-
-.app__editor-color:active {
-  transform: scale(0.9);
-}
-
-.app__editor-color--active {
-  border: 2px solid var(--app-buttons-main-color);
-}
-
-#app__add-note-button {
-  background-color: var(--app-buttons-main-color);
-  border: 0;
-  padding: 5px 15px;
-  color: rgb(228, 227, 227);
-  box-shadow: 2px 2px 5px var(--app-notes-shadow-color);
-  margin-top: 10px;
-  border-radius: 10px;
 }
 </style>
