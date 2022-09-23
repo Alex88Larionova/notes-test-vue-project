@@ -1,5 +1,6 @@
 <script setup>
   import { ref, computed } from 'vue';
+  import AppSearch from './components/AppSearch/AppSearch.vue';
   
   const colorCollection = [
     { id: 1, name: 'blue', textColor: 'black', color: 'rgb(51, 105, 255)' },
@@ -69,14 +70,9 @@
   <template>
   
   <div class="app__title">Notes</div>
+    <AppSearch :test="search" />
+
     <div id="app__editor">
-    <!-- Search -->
-    <input
-      id="app__search"
-      v-model="search"
-      type="text"
-      placeholder="Search..."
-    >
   
     <!-- Editor -->
     <button class="app__note-editor-button">+</button>
@@ -213,15 +209,6 @@
     border-radius: 15px;
   }
   
-  #app__search {
-    width: 200px;
-    margin: 0;
-    padding: 0;
-    background-color:var(--app-input-background-color);
-    border:0;
-    padding: 5px;
-    border-radius: 15px;
-  }
   
   #app__editor h1 {
     font-size: 16px;
