@@ -1,19 +1,21 @@
 <script setup>
-    
-
     const props = defineProps({
     filteredNoted: Array,
     notes: Array
   })
+  
 
 function deleteNoteButton(noteId) {
   deleteNote(noteId);
 }
 
+
 function deleteNote(noteId) {
   const noteIndex = notes.value.findIndex((note) => note.id === noteId);
   notes.value.splice(noteIndex, 1);
 }
+
+
 </script>
 
 <template> 
@@ -24,8 +26,8 @@ function deleteNote(noteId) {
       :style="{
         'background-color': note.backgroundColor,
         'color': note.textColor
-      }"
-    >
+      }"      
+      @click="showNoteEditor = true">
       <div class="app__note-content">
         <button
           class="app__note-delete-button"
@@ -56,6 +58,7 @@ function deleteNote(noteId) {
   }
   
   .app__note {
+    cursor: pointer;
     width: 200px;
     height: 200px;
     margin: 10px 0px;
@@ -64,6 +67,20 @@ function deleteNote(noteId) {
     border-radius: 15px;
     box-shadow: 3px 3px 5px var(--app-notes-shadow-color);
   }
+
+  .app__note-delete-button {
+  cursor: pointer;
+  z-index: 1;
+  font-size: 14px;
+  margin: 0;
+  padding: 0px 5px;
+  background-color: var(--app-buttons-main-color);
+  border: 3px solid var(--app-buttons-main-color);
+  border-radius: 50%;
+  color: rgb(228, 227, 227);
+  box-shadow: 2px 2px 5px var(--app-buttons-shadow-color);
+}
+
 </style>
 
 
