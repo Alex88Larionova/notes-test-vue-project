@@ -11,13 +11,10 @@ function deleteNoteButton (noteId) {
   deleteNote(noteId)
 }
 
-
 function deleteNote (noteId) {
-  const noteIndex = notes.value.findIndex(note => note.id === noteId)
-  notes.value.splice(noteIndex, 1)
+  const noteIndex = props.notes.findIndex(note => note.id === noteId)
+  props.notes.splice(noteIndex, 1)
 }
-
-
 </script>
 
 <template>
@@ -34,7 +31,7 @@ function deleteNote (noteId) {
       <div class="app__note-content">
         <button
           class="app__note-delete-button"
-          @click="deleteNoteButton(note.id)"
+          @click.stop="deleteNoteButton(note.id)"
         >
           &#215
         </button>
