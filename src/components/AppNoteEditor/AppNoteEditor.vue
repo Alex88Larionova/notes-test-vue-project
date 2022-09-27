@@ -1,42 +1,48 @@
 <script setup>
-import { ref } from "vue";
+import { ref } from 'vue'
 
 const props = defineProps({
   notes: Array,
   showNoteEditor: Boolean,
-});
-const emit = defineEmits(["closeNote"]);
+  selectedNote: Object,
+  editorType: String // new-note | edit-note
+})
+const emit = defineEmits(['closeNoteEditor'])
 
 const colorCollection = [
-  { id: 1, name: "blue", textColor: "black", color: "rgb(51, 105, 255)" },
-  { id: 2, name: "yellow", textColor: "black", color: "rgb(255, 218, 71)" },
-  { id: 3, name: "white", textColor: "black", color: "rgb(247, 245, 245)" },
-  { id: 4, name: "plum", textColor: "black", color: "rgb(174, 59, 118)" },
-  { id: 5, name: "azure", textColor: "black", color: "rgb(10, 235, 175)" },
-  { id: 6, name: "peach", textColor: "black", color: "rgb(255, 119, 70)" },
-  { id: 7, name: "black", textColor: "white", color: "rgb(14, 18, 27)" },
-];
+  { id: 1, name: 'blue', textColor: 'black', color: 'rgb(51, 105, 255)' },
+  { id: 2, name: 'yellow', textColor: 'black', color: 'rgb(255, 218, 71)' },
+  { id: 3, name: 'white', textColor: 'black', color: 'rgb(247, 245, 245)' },
+  { id: 4, name: 'plum', textColor: 'black', color: 'rgb(174, 59, 118)' },
+  { id: 5, name: 'azure', textColor: 'black', color: 'rgb(10, 235, 175)' },
+  { id: 6, name: 'peach', textColor: 'black', color: 'rgb(255, 119, 70)' },
+  { id: 7, name: 'black', textColor: 'white', color: 'rgb(14, 18, 27)' }
+]
 
 const noteEditor = ref({
-  title: "",
-  content: "",
-  backgroundColor: "",
-  textColor: "",
-  nameColor: "",
-});
+  title: '',
+  content: '',
+  backgroundColor: '',
+  textColor: '',
+  nameColor: ''
+})
 
 function addNoteButton() {
-  emit("closeNote");
-  addNote();
-  clearEditor();
+  emit('closeNoteEditor')
+  addNote()
+  clearEditor()
 }
 
-function closeNote() {
-  emit("closeNote");
-  clearEditor();
+function editNoteButton() {
+  emit('closeNoteEditor')
+  saveNote()
+  clearEditor()
 }
 
-
+function closeNoteEditor() {
+  emit('closeNoteEditor')
+  clearEditor()
+}
 
 function addNote() {
   props.notes.push({
@@ -45,37 +51,59 @@ function addNote() {
     content: noteEditor.value.content,
     backgroundColor: noteEditor.value.backgroundColor,
     textColor: noteEditor.value.textColor,
-    nameColor: noteEditor.value.nameColor,
-  });
-  /* localStorage.setItem("notes", JSON.stringify(notes)); */
-  localStorage.setItem("notes", JSON.stringify(props.notes));
-  console.log(props.notes.length);
-  console.log(props.notes);
+    nameColor: noteEditor.value.nameColor
+  })
+  console.log(props.notes.length)
+  console.log(props.notes)
+}
+
+function saveNote() {
+  props.selectedNote.title = noteEditor.value.title
+  props.selectedNote.content = noteEditor.value.content
+  props.selectedNote.backgroundColor = noteEditor.value.backgroundColor
 }
 
 function addColorButton(colorName) {
   noteEditor.value.backgroundColor = colorCollection.find(
-    (color) => color.name === colorName
-  ).color;
+    color => color.name === colorName
+  ).color
   noteEditor.value.textColor = colorCollection.find(
-    (color) => color.name === colorName
-  ).textColor;
+    color => color.name === colorName
+  ).textColor
   noteEditor.value.nameColor = colorCollection.find(
-    (color) => color.name === colorName
-  ).name;
+    color => color.name === colorName
+  ).name
 }
 
 function clearEditor() {
-  noteEditor.value.title = "";
-  noteEditor.value.content = "";
+  noteEditor.value.title = ''
+  noteEditor.value.content = ''
 }
+
+function loadEditor () {
+  if (props.editorType === 'new-note') {
+    return
+  }
+  else if (props.editorType === 'edit-note') {
+    noteEditor.value.title = props.selectedNote.title
+    noteEditor.value.content = props.selectedNote.content
+    noteEditor.value.backgroundColor = props.selectedNote.backgroundColor
+  }
+}
+
+loadEditor()
 </script>
 
 <template>
   <div id="app__editor">
-    <div class="app__close-editor-button" @click="closeNote">&#215</div>
-    <h1>Note editor</h1>
-    <p></p>
+    <div
+      class="app__close-editor-button"
+      @click="closeNoteEditor"
+    >
+      &#215
+    </div>
+    <h1>Note editor ({{ editorType === 'new-note' ? 'New note' : 'Edit note' }})</h1>
+    <p />
     <div class="app__colors">
       <input
         v-for="item in colorCollection"
@@ -83,30 +111,42 @@ function clearEditor() {
         class="app__editor-color"
         type="button"
         :style="{
-          'background-color': item.color,
+          'background-color': item.color
         }"
         :class="{
           'app__editor-color--active':
-            noteEditor.backgroundColor === item.color,
+            noteEditor.backgroundColor === item.color
         }"
         @click="addColorButton(item.name)"
-      />
+      >
     </div>
     <input
       id="app__editor-title"
       v-model="noteEditor.title"
       type="text"
       placeholder="Title..."
-    />
+    >
     <textarea
       id="app__editor-content"
       v-model="noteEditor.content"
       type="text"
       placeholder="Content..."
-    ></textarea>
+    />
 
-    <button id="app__add-note-button" @click="addNoteButton">
+    <button
+      v-if="props.editorType === 'new-note'"
+      id="app__add-note-button"
+      @click="addNoteButton"
+    >
       Создать заметку
+    </button>
+
+    <button
+      v-if="props.editorType === 'edit-note'"
+      id="app__save-note-button"
+      @click="editNoteButton"
+    >
+      Сохранить
     </button>
   </div>
 </template>
@@ -209,7 +249,8 @@ function clearEditor() {
   border: 2px solid var(--app-buttons-main-color);
 }
 
-#app__add-note-button {
+#app__add-note-button,
+#app__save-note-button {
   background-color: var(--app-buttons-main-color);
   border: 0;
   padding: 5px 15px;

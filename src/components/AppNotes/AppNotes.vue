@@ -5,7 +5,7 @@ const props = defineProps({
   showNoteEditor: Boolean
 })
 
-const emit = defineEmits(['showNoteEditor'])
+const emit = defineEmits(['noteClick'])
 
 function deleteNoteButton (noteId) {
   deleteNote(noteId)
@@ -26,7 +26,7 @@ function deleteNote (noteId) {
         'background-color': note.backgroundColor,
         'color': note.textColor
       }"
-      @click="emit('showNoteEditor')"
+      @click="emit('noteClick', note)"
     >
       <div class="app__note-content">
         <button

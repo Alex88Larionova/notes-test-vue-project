@@ -4,7 +4,9 @@ import AppSearch from './components/AppSearch/AppSearch.vue'
 import AppNotes from './components/AppNotes/AppNotes.vue'
 import AppNoteEditor from './components/AppNoteEditor/AppNoteEditor.vue'
 
+const editorType = ref('new-note')
 const showNoteEditor = ref(false)
+const selectedNote = ref({})
 const search = ref('')
 const notes = ref([])
 /* const notes = ref(JSON.parse(localStorage.getItem("notes"))) || ref([]); */
@@ -19,6 +21,43 @@ function noteFilter (note) {
   const colorMatch = note.nameColor.includes(search.value)
   return isEmpty || titleMatch || contentMatch || colorMatch
 }
+
+function noteClick (event) {
+  selectedNote.value = event
+  editorType.value = 'edit-note'
+  showNoteEditor.value = true
+}
+
+function openNewNoteEdtior () {
+  editorType.value = 'new-note'
+  showNoteEditor.value = true
+}
+
+function loadNotes () {
+  console.log(getNotes())
+  // notes.value = (getNotes())
+}
+
+function closeNoteEditor () {
+  showNoteEditor.value = false
+  updateNotes()
+}
+
+function getNotes () {
+  console.log(localStorage.getItem('notes'))
+  return JSON.parse(localStorage.getItem('notes'))
+}
+
+function saveNotes () {
+  console.log(notes.value)
+  localStorage.setItem('notes', notes.value)
+}
+
+function updateNotes () {
+  // saveNotes()
+}
+
+// loadNotes()
 </script>
 
 <template>
@@ -30,17 +69,20 @@ function noteFilter (note) {
     :filtered-noted="filteredNoted"
     :notes="notes"
     :show-note-editor="showNoteEditor"
-    @showNoteEditor="showNoteEditor = true"
+    @noteClick="noteClick"
+    @deleteNote="updateNotes()"
   />
   <AppNoteEditor
     v-if="showNoteEditor"
     :notes="notes"
     :show-note-editor="showNoteEditor"
-    @closeNote="showNoteEditor = false"
+    :editor-type="editorType"
+    :selected-note="selectedNote"
+    @closeNoteEditor="closeNoteEditor()"
   />
   <button
     class="app__note-editor-button"
-    @click="showNoteEditor = true"
+    @click="openNewNoteEdtior()"
   >
     +
   </button>
