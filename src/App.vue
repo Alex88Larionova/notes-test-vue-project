@@ -25,7 +25,7 @@ function noteFilter (note) {
   <div class="app__title">
     Notes
   </div>
-  <AppSearch :test="search" />
+  <AppSearch v-model="search" />
   <AppNotes
     :filtered-noted="filteredNoted"
     :notes="notes"

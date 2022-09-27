@@ -1,17 +1,24 @@
 <script setup>
-  import {defineProps} from 'vue'
+import { defineProps } from 'vue'
 
-  const props = defineProps({
-    modelValue: String
-  })
+const props = defineProps({
+  modelValue: String
+})
+
+const emit = defineEmits(['update:modelValue'])
+
+function input (event) {
+  emit('update:modelValue', event.target.value)
+}
 </script>
 
 <template>
   <input
     id="app__search"
-    v-model="modelValue"
+    :value="props.modelValue"
     type="text"
     placeholder="Search..."
+    @input="input"
   >
 </template>
 
