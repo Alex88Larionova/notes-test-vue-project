@@ -1,11 +1,11 @@
 <script setup>
-import {ref} from 'vue';
+import { ref } from "vue";
 
 const props = defineProps({
   notes: Array,
-  showNoteEditor: Boolean
-})
-const emit = defineEmits(['closeNote'])
+  showNoteEditor: Boolean,
+});
+const emit = defineEmits(["closeNote"]);
 
 const colorCollection = [
   { id: 1, name: "blue", textColor: "black", color: "rgb(51, 105, 255)" },
@@ -26,10 +26,17 @@ const noteEditor = ref({
 });
 
 function addNoteButton() {
-  emit('closeNote')
+  emit("closeNote");
   addNote();
   clearEditor();
 }
+
+function closeNote() {
+  emit("closeNote");
+  clearEditor();
+}
+
+
 
 function addNote() {
   props.notes.push({
@@ -40,7 +47,8 @@ function addNote() {
     textColor: noteEditor.value.textColor,
     nameColor: noteEditor.value.nameColor,
   });
-  // localStorage.getitem('notes', props.notes)
+  /* localStorage.setItem("notes", JSON.stringify(notes)); */
+  localStorage.setItem("notes", JSON.stringify(props.notes));
   console.log(props.notes.length);
   console.log(props.notes);
 }
@@ -61,14 +69,13 @@ function clearEditor() {
   noteEditor.value.title = "";
   noteEditor.value.content = "";
 }
-
-// localStorage.getitem('notes')
 </script>
 
 <template>
   <div id="app__editor">
-    <div>Закрыть</div>
-    <h1>Редактор заметок</h1>
+    <div class="app__close-editor-button" @click="closeNote">&#215</div>
+    <h1>Note editor</h1>
+    <p></p>
     <div class="app__colors">
       <input
         v-for="item in colorCollection"
@@ -91,12 +98,13 @@ function clearEditor() {
       type="text"
       placeholder="Title..."
     />
-    <input
+    <textarea
       id="app__editor-content"
       v-model="noteEditor.content"
       type="text"
       placeholder="Content..."
-    />
+    ></textarea>
+
     <button id="app__add-note-button" @click="addNoteButton">
       Создать заметку
     </button>
@@ -116,6 +124,9 @@ function clearEditor() {
   margin-bottom: 5px;
   padding: 5px;
   border-radius: 15px;
+  width: 50%;
+  max-width: 400px;
+  color: var(--app-text-color);
 }
 
 #app__editor-content {
@@ -123,11 +134,30 @@ function clearEditor() {
   border: 0;
   padding: 5px;
   border-radius: 15px;
+  width: 50%;
+  max-width: 400px;
+  color: var(--app-text-color);
+  word-wrap: break-word;
+  min-height: 100px;
+  max-height: auto;
 }
 
 #app__editor h1 {
-  font-size: 16px;
+  margin-bottom: 5px;
+  font-size: 20px;
   text-align: center;
+  width: 50%;
+  max-width: 400px;
+}
+
+#app__editor p {
+  margin-top: 0;
+  margin-bottom: 10px;
+  height: 2px;
+  width: 50%;
+  max-width: 400px;
+  background-color:rgb(51, 105, 255, 0.5);
+  box-shadow: 3px 3px 6px var(--app-notes-shadow-color);
 }
 
 #app__editor {
@@ -137,12 +167,13 @@ function clearEditor() {
   top: 0;
   width: 100%;
   height: 100%;
-  margin-left: 10px;
   background-color: rgb(0, 0, 0, 0.1);
   backdrop-filter: blur(16px);
   display: flex;
   justify-content: center;
+  align-items: center;
   flex-direction: column;
+  color: var(--app-text-color);
 }
 
 .app__colors {
@@ -163,6 +194,7 @@ function clearEditor() {
   height: 20px;
   border: 0;
   border-radius: 50%;
+  box-shadow: 3px 3px 6px var(--app-notes-shadow-color);
 }
 
 .app__editor-color:hover {
@@ -185,5 +217,24 @@ function clearEditor() {
   box-shadow: 2px 2px 5px var(--app-notes-shadow-color);
   margin-top: 10px;
   border-radius: 10px;
+}
+
+.app__close-editor-button {
+  display: flex;
+  justify-content: center;
+  align-items:center;
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  cursor: pointer;
+  margin:0;
+  background-color: var(--app-buttons-main-color);
+  color: var(--app-text-color);
+  font-size: 20px;
+  border: none;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  box-shadow: 5px 5px 15px var(--app-notes-shadow-color);
 }
 </style>
