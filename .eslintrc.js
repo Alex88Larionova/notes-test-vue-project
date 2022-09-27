@@ -4,7 +4,7 @@ module.exports = {
   },
   extends: [
     'plugin:vue/vue3-recommended',
-    'eslint:recommended',
+    'eslint:recommended'
   ],
   rules: {
     'no-unused-vars': 'off',
@@ -35,21 +35,6 @@ module.exports = {
     'object-shorthand': ['error', 'always'],
     'prefer-const': 'error',
     'func-style': ['error', 'declaration', { 'allowArrowFunctions': true }],
-    '@typescript-eslint/array-type': ['error', {
-      default: 'array-simple'
-    }],
-    '@typescript-eslint/member-delimiter-style': ['error', {
-      multiline: {
-        delimiter: 'semi',
-        requireLast: true
-      },
-      singleline: {
-        delimiter: 'semi',
-        requireLast: false
-      }
-    }],
-    '@typescript-eslint/brace-style': ['error'],
-    '@typescript-eslint/no-unused-vars': 'error',
     'vue/no-unused-vars': 'error',
     'vue/require-default-prop': 'error',
     'vue/multi-word-component-names': 'off',

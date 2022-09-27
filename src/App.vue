@@ -1,41 +1,47 @@
 <script setup>
-import { ref, computed } from "vue";
-import AppSearch from "./components/AppSearch/AppSearch.vue";
-import AppNotes from "./components/AppNotes/AppNotes.vue";
-import AppNoteEditor from "./components/AppNoteEditor/AppNoteEditor.vue";
+import { ref, computed } from 'vue'
+import AppSearch from './components/AppSearch/AppSearch.vue'
+import AppNotes from './components/AppNotes/AppNotes.vue'
+import AppNoteEditor from './components/AppNoteEditor/AppNoteEditor.vue'
 
-const showNoteEditor = ref(false);
-const search = ref("");
-const notes = ref([]);
+const showNoteEditor = ref(false)
+const search = ref('')
+const notes = ref([])
 /* const notes = ref(JSON.parse(localStorage.getItem("notes"))) || ref([]); */
 const filteredNoted = computed(() =>
-  notes.value.filter((note) => noteFilter(note))
-);
+  notes.value.filter(note => noteFilter(note))
+)
 
-function noteFilter(note) {
-  const isEmpty = search.value === "";
-  const titleMatch = note.title.includes(search.value);
-  const contentMatch = note.content.includes(search.value);
-  const colorMatch = note.nameColor.includes(search.value);
-  return isEmpty || titleMatch || contentMatch || colorMatch;
+function noteFilter (note) {
+  const isEmpty = search.value === ''
+  const titleMatch = note.title.includes(search.value)
+  const contentMatch = note.content.includes(search.value)
+  const colorMatch = note.nameColor.includes(search.value)
+  return isEmpty || titleMatch || contentMatch || colorMatch
 }
 </script>
 
 <template>
-  <div class="app__title">Notes</div>
+  <div class="app__title">
+    Notes
+  </div>
   <AppSearch :test="search" />
   <AppNotes
-    :filteredNoted="filteredNoted"
+    :filtered-noted="filteredNoted"
     :notes="notes"
-    :showNoteEditor="showNoteEditor"
+    :show-note-editor="showNoteEditor"
+    @showNoteEditor="showNoteEditor = true"
   />
   <AppNoteEditor
     v-if="showNoteEditor"
     :notes="notes"
-    :showNoteEditor="showNoteEditor"
+    :show-note-editor="showNoteEditor"
     @closeNote="showNoteEditor = false"
   />
-  <button class="app__note-editor-button" @click="showNoteEditor = true">
+  <button
+    class="app__note-editor-button"
+    @click="showNoteEditor = true"
+  >
     +
   </button>
 </template>
