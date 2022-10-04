@@ -3,6 +3,8 @@ import { ref, computed, nextTick, onMounted } from 'vue'
 import AppSearch from './components/AppSearch/AppSearch.vue'
 import AppNotes from './components/AppNotes/AppNotes.vue'
 import AppNoteEditor from './components/AppNoteEditor/AppNoteEditor.vue'
+import { useEditor } from '@tiptap/vue-3'
+import StarterKit from '@tiptap/starter-kit'
 
 const editorType = ref('new-note')
 const showNoteEditor = ref(false)
@@ -13,6 +15,13 @@ const notes = ref([])
 const filteredNoted = computed(() =>
   notes.value.filter(note => noteFilter(note))
 )
+
+const editor = useEditor({
+  content: '<p>I’m running Tiptap with Vue.js. 🎉</p>',
+  extensions: [
+    StarterKit
+  ]
+})
 
 function noteFilter (note) {
   const isEmpty = search.value === ''
@@ -73,6 +82,7 @@ loadNotes()
     :show-note-editor="showNoteEditor"
     :editor-type="editorType"
     :selected-note="selectedNote"
+    :editor="editor"
     @closeNoteEditor="closeNoteEditor()"
   />
   <button
@@ -118,8 +128,10 @@ body {
 }
 
 .app__note-editor-button {
-  text-align: center;
   position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   right: 20px;
   bottom: 20px;
   cursor: pointer;

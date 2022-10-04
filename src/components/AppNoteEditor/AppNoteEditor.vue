@@ -1,11 +1,13 @@
 <script setup>
 import { ref } from 'vue'
+import { EditorContent } from '@tiptap/vue-3'
 
 const props = defineProps({
   notes: Array,
   showNoteEditor: Boolean,
   selectedNote: Object,
-  editorType: String // new-note | edit-note
+  editorType: String, // new-note | edit-note
+  editor: Object
 })
 const emit = defineEmits(['closeNoteEditor'])
 
@@ -91,6 +93,10 @@ function loadEditor () {
   }
 }
 
+function updateContent(event) {
+  console.log(event.target.innerHTML)
+}
+
 loadEditor()
 </script>
 
@@ -126,11 +132,25 @@ loadEditor()
       type="text"
       placeholder="Title..."
     >
-    <textarea
+
+    <div id="app__editor-toolbar">
+      <button
+        :class="{ 'is-active': editor.isActive('bold') }"
+        @click="editor.chain().focus().toggleBold().run()"
+      >
+        Bold
+      </button>
+      <button
+        :class="{ 'is-active': editor.isActive('OrderedList') }"
+        @click="editor.chain().focus().toggleOrderedList().run()"
+      >
+        OrderedList
+      </button>
+    </div>
+
+    <EditorContent
       id="app__editor-content"
-      v-model="noteEditor.content"
-      type="text"
-      placeholder="Content..."
+      :editor="editor"
     />
 
     <button
@@ -152,6 +172,18 @@ loadEditor()
 </template>
 
 <style>
+.ProseMirror {
+  height: 100%;
+}
+
+.ProseMirror li {
+  height: 30px;
+}
+
+.is-active {
+  background: blue;
+}
+
 .app__title {
   font-size: 24px;
   font-weight: 600;
