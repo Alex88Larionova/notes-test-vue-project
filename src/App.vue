@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, nextTick, onMounted } from 'vue'
 import AppSearch from './components/AppSearch/AppSearch.vue'
 import AppNotes from './components/AppNotes/AppNotes.vue'
 import AppNoteEditor from './components/AppNoteEditor/AppNoteEditor.vue'
@@ -34,30 +34,25 @@ function openNewNoteEdtior () {
 }
 
 function loadNotes () {
-  console.log(getNotes())
-  // notes.value = (getNotes())
+  notes.value = getNotes()
 }
 
 function closeNoteEditor () {
   showNoteEditor.value = false
-  updateNotes()
+  saveNotes()
 }
 
 function getNotes () {
-  console.log(localStorage.getItem('notes'))
   return JSON.parse(localStorage.getItem('notes'))
 }
 
 function saveNotes () {
-  console.log(notes.value)
-  localStorage.setItem('notes', notes.value)
+  nextTick(() => {
+    localStorage.setItem('notes', JSON.stringify(notes.value))
+  })
 }
 
-function updateNotes () {
-  // saveNotes()
-}
-
-// loadNotes()
+loadNotes()
 </script>
 
 <template>
@@ -70,7 +65,7 @@ function updateNotes () {
     :notes="notes"
     :show-note-editor="showNoteEditor"
     @noteClick="noteClick"
-    @deleteNote="updateNotes()"
+    @deleteNote="saveNotes()"
   />
   <AppNoteEditor
     v-if="showNoteEditor"
