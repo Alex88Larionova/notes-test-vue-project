@@ -79,7 +79,7 @@ loadNotes()
     class="app__note-editor-button"
     @click="openNewNoteEdtior()"
   >
-    +
+    <span class="material-symbols-outlined">add</span>
   </button>
 </template>
 
