@@ -20,7 +20,8 @@ function deleteNote (noteId) {
 <template>
   <div id="app__notes">
     <div
-      v-for="(note, i) in filteredNoted"
+      v-for="(note, index) in filteredNoted"
+      :key="'note-' + index"
       class="app__note"
       :style="{
         'background-color': note.backgroundColor,
