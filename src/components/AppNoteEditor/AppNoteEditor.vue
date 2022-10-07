@@ -2,14 +2,15 @@
 import { ref } from 'vue'
 import { EditorContent } from '@tiptap/vue-3'
 
+
 const props = defineProps({
   notes: Array,
   showNoteEditor: Boolean,
   selectedNote: Object,
   editorType: String, // new-note | edit-note
-  editor: Object
+  editor: Object,
 })
-const emit = defineEmits(['closeNoteEditor'])
+const emit = defineEmits(['closeNoteEditor','updateEditorContent'])
 
 const colorCollection = [
   { id: 1, name: 'blue', textColor: 'black', color: 'rgb(51, 105, 255)' },
@@ -20,6 +21,8 @@ const colorCollection = [
   { id: 6, name: 'peach', textColor: 'black', color: 'rgb(255, 119, 70)' },
   { id: 7, name: 'black', textColor: 'white', color: 'rgb(14, 18, 27)' }
 ]
+
+
 
 const noteEditor = ref({
   title: '',
@@ -46,23 +49,27 @@ function closeNoteEditor() {
   clearEditor()
 }
 
+
+
 function addNote() {
   props.notes.push({
     id: props.notes.length + 1,
     title: noteEditor.value.title,
-    content: noteEditor.value.content,
+    content: props.editor.options.content,
     backgroundColor: noteEditor.value.backgroundColor,
     textColor: noteEditor.value.textColor,
     nameColor: noteEditor.value.nameColor
   })
   console.log(props.notes.length)
   console.log(props.notes)
+  console.log(props.editor.options.content)
 }
 
 function saveNote() {
   props.selectedNote.title = noteEditor.value.title
-  props.selectedNote.content = noteEditor.value.content
+  props.selectedNote.content = props.editor.options.content
   props.selectedNote.backgroundColor = noteEditor.value.backgroundColor
+  console.log(editor.options.content)
 }
 
 function addColorButton(colorName) {
@@ -93,9 +100,8 @@ function loadEditor () {
   }
 }
 
-function updateContent(event) {
-  console.log(event.target.innerHTML)
-}
+
+
 
 loadEditor()
 </script>
@@ -151,7 +157,9 @@ loadEditor()
     <EditorContent
       id="app__editor-content"
       :editor="editor"
-    />
+      :value="editor.options.content"
+      @input="emit('updateEditorConten')"
+      />
 
     <button
       v-if="props.editorType === 'new-note'"

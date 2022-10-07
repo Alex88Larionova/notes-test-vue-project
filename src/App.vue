@@ -1,73 +1,76 @@
 <script setup>
-import { ref, computed, nextTick, onMounted } from 'vue'
-import AppSearch from './components/AppSearch/AppSearch.vue'
-import AppNotes from './components/AppNotes/AppNotes.vue'
-import AppNoteEditor from './components/AppNoteEditor/AppNoteEditor.vue'
-import { useEditor } from '@tiptap/vue-3'
-import StarterKit from '@tiptap/starter-kit'
+import { ref, computed, nextTick, onMounted } from "vue";
+import AppSearch from "./components/AppSearch/AppSearch.vue";
+import AppNotes from "./components/AppNotes/AppNotes.vue";
+import AppNoteEditor from "./components/AppNoteEditor/AppNoteEditor.vue";
+import { useEditor } from "@tiptap/vue-3";
+import StarterKit from "@tiptap/starter-kit";
 
-const editorType = ref('new-note')
-const showNoteEditor = ref(false)
-const selectedNote = ref({})
-const search = ref('')
-const notes = ref([])
+const editorType = ref("new-note");
+const showNoteEditor = ref(false);
+const selectedNote = ref({});
+const search = ref("");
+const notes = ref([]);
+
 /* const notes = ref(JSON.parse(localStorage.getItem("notes"))) || ref([]); */
 const filteredNoted = computed(() =>
-  notes.value.filter(note => noteFilter(note))
-)
+  notes.value.filter((note) => noteFilter(note))
+);
 
 const editor = useEditor({
-  content: '<p>I’m running Tiptap with Vue.js. 🎉</p>',
-  extensions: [
-    StarterKit
-  ]
-})
+  content: "",
+  extensions: [StarterKit],
+});
 
-function noteFilter (note) {
-  const isEmpty = search.value === ''
-  const titleMatch = note.title.includes(search.value)
-  const contentMatch = note.content.includes(search.value)
-  const colorMatch = note.nameColor.includes(search.value)
-  return isEmpty || titleMatch || contentMatch || colorMatch
+function noteFilter(note) {
+  const isEmpty = search.value === "";
+  const titleMatch = note.title.includes(search.value);
+  const contentMatch = note.content.includes(search.value);
+  const colorMatch = note.nameColor.includes(search.value);
+  return isEmpty || titleMatch || contentMatch || colorMatch;
 }
 
-function noteClick (event) {
-  selectedNote.value = event
-  editorType.value = 'edit-note'
-  showNoteEditor.value = true
+function noteClick(event) {
+  selectedNote.value = event;
+  editorType.value = "edit-note";
+  showNoteEditor.value = true;
 }
 
-function openNewNoteEdtior () {
-  editorType.value = 'new-note'
-  showNoteEditor.value = true
+function openNewNoteEdtior() {
+  editorType.value = "new-note";
+  showNoteEditor.value = true;
 }
 
-function loadNotes () {
-  notes.value = getNotes()
+function loadNotes() {
+  notes.value = getNotes();
 }
 
-function closeNoteEditor () {
-  showNoteEditor.value = false
-  saveNotes()
+function closeNoteEditor() {
+  showNoteEditor.value = false;
+  saveNotes();
 }
 
-function getNotes () {
-  return JSON.parse(localStorage.getItem('notes'))
+function getNotes() {
+  return JSON.parse(localStorage.getItem("notes"));
 }
 
-function saveNotes () {
+function saveNotes() {
   nextTick(() => {
-    localStorage.setItem('notes', JSON.stringify(notes.value))
-  })
+    localStorage.setItem("notes", JSON.stringify(notes.value));
+  });
 }
 
-loadNotes()
+function updateEditorContent(event) {
+  console.log(event.target.innerHTML);
+  editor.options.content = event.target.innerHTML;
+  console.log(props.editor.options.content);
+}
+
+/* loadNotes(); */
 </script>
 
 <template>
-  <div class="app__title">
-    Notes
-  </div>
+  <div class="app__title">Notes</div>
   <AppSearch v-model="search" />
   <AppNotes
     :filtered-noted="filteredNoted"
@@ -84,11 +87,9 @@ loadNotes()
     :selected-note="selectedNote"
     :editor="editor"
     @closeNoteEditor="closeNoteEditor()"
+    @updateEditorContent="updateEditorContent()"
   />
-  <button
-    class="app__note-editor-button"
-    @click="openNewNoteEdtior()"
-  >
+  <button class="app__note-editor-button" @click="openNewNoteEdtior()">
     <span class="material-symbols-outlined">add</span>
   </button>
 </template>
@@ -148,5 +149,9 @@ body {
 
 .app__note-delete-button:hover {
   transform: scale(0.9);
+}
+
+.app__title {
+  margin: 20px 10px 10px 20px;
 }
 </style>
