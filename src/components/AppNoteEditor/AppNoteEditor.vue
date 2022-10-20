@@ -10,7 +10,7 @@ const props = defineProps({
   editorType: String, // new-note | edit-note
   editor: Object,
 })
-const emit = defineEmits(['closeNoteEditor','updateEditorContent'])
+const emit = defineEmits(['closeNoteEditor', 'noteClick'])
 
 const colorCollection = [
   { id: 1, name: 'blue', textColor: 'black', color: 'rgb(51, 105, 255)' },
@@ -60,16 +60,14 @@ function addNote() {
     textColor: noteEditor.value.textColor,
     nameColor: noteEditor.value.nameColor
   })
-  console.log(props.notes.length)
-  console.log(props.notes)
-  console.log(props.editor.options.content)
+ 
 }
 
 function saveNote() {
   props.selectedNote.title = noteEditor.value.title
   props.selectedNote.content = props.editor.options.content
   props.selectedNote.backgroundColor = noteEditor.value.backgroundColor
-  console.log(editor.options.content)
+  
 }
 
 function addColorButton(colorName) {
@@ -87,6 +85,7 @@ function addColorButton(colorName) {
 function clearEditor() {
   noteEditor.value.title = ''
   noteEditor.value.content = ''
+  editor.value.options.content = ''
 }
 
 function loadEditor () {
@@ -95,13 +94,12 @@ function loadEditor () {
   }
   else if (props.editorType === 'edit-note') {
     noteEditor.value.title = props.selectedNote.title
-    noteEditor.value.content = props.selectedNote.content
+    props.editor.options.content = props.selectedNote.content
     noteEditor.value.backgroundColor = props.selectedNote.backgroundColor
   }
+  console.log(props.editor.options.content);
+  
 }
-
-
-
 
 loadEditor()
 </script>
@@ -152,13 +150,19 @@ loadEditor()
       >
         OrderedList
       </button>
+      <div v-if="editor">
+    <button @click="addImage">
+      setImage
+    </button>
+    <editor-content :editor="editor" />
+  </div>
     </div>
 
     <EditorContent
       id="app__editor-content"
       :editor="editor"
       :value="editor.options.content"
-      @input="emit('updateEditorConten')"
+      @input="emit('updateEditorContent', $event)"
       />
 
     <button
@@ -317,5 +321,14 @@ loadEditor()
   height: 50px;
   border-radius: 50%;
   box-shadow: 5px 5px 15px var(--app-notes-shadow-color);
+}
+
+#app__editor-toolbar{
+  width: 50%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 </style>

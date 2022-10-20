@@ -9,6 +9,7 @@ const emit = defineEmits(['noteClick'])
 
 function deleteNoteButton (noteId) {
   deleteNote(noteId)
+  emit("saveNotes");
 }
 
 function deleteNote (noteId) {
@@ -39,9 +40,8 @@ function deleteNote (noteId) {
         <div class="app__note-title">
           {{ note.title }}
         </div>
-        <div class="app__note-content">
-          {{ note.content }}
-        </div>
+        <div class="app__note-content" v-html='note.content'>
+          </div>
       </div>
     </div>
   </div>
@@ -53,6 +53,7 @@ function deleteNote (noteId) {
   justify-content: start;
   flex-direction: row;
   flex-wrap: wrap;
+  align-items: flex-start;
   gap: 10px;
   width: 100%;
   margin-left: 20px;
@@ -61,7 +62,8 @@ function deleteNote (noteId) {
 .app__note {
   cursor: pointer;
   width: 200px;
-  height: 200px;
+  min-height: 200px;
+  max-height: auto;
   margin: 10px 0px;
   padding: 20px;
   border: 0;
@@ -69,7 +71,19 @@ function deleteNote (noteId) {
   box-shadow: 3px 3px 5px var(--app-notes-shadow-color);
 }
 
+.app__note-content {
+   display: flex;
+  justify-content: start;
+  align-items: flex-start;
+  flex-direction:column;
+}
+
+.app__note-content p{
+margin: 0;
+}
+
 .app__note-delete-button {
+  align-self: flex-end;
   cursor: pointer;
   z-index: 1;
   font-size: 14px;
@@ -80,6 +94,12 @@ function deleteNote (noteId) {
   border-radius: 50%;
   color: rgb(228, 227, 227);
   box-shadow: 2px 2px 5px var(--app-buttons-shadow-color);
+}
+
+.app__note-title{
+font-size: 18px;
+margin-bottom: 15px;
+margin-top: 0;
 }
 </style>
 

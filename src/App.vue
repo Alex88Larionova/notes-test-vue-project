@@ -1,10 +1,11 @@
 <script setup>
-import { ref, computed, nextTick, onMounted } from "vue";
+import { ref, computed, nextTick } from "vue";
 import AppSearch from "./components/AppSearch/AppSearch.vue";
 import AppNotes from "./components/AppNotes/AppNotes.vue";
 import AppNoteEditor from "./components/AppNoteEditor/AppNoteEditor.vue";
 import { useEditor } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
+import Image from "@tiptap/extension-image";
 
 const editorType = ref("new-note");
 const showNoteEditor = ref(false);
@@ -18,8 +19,8 @@ const filteredNoted = computed(() =>
 );
 
 const editor = useEditor({
-  content: "",
-  extensions: [StarterKit],
+  content: "<h1>Title</h1>",
+  extensions: [StarterKit, Image],
 });
 
 function noteFilter(note) {
@@ -51,7 +52,13 @@ function closeNoteEditor() {
 }
 
 function getNotes() {
-  return JSON.parse(localStorage.getItem("notes"));
+  const notes = JSON.parse(localStorage.getItem("notes"));
+  console.log(notes);
+  if (notes?.length > 0) {
+    return notes;
+  } else {
+    return [];
+  }
 }
 
 function saveNotes() {
@@ -61,12 +68,11 @@ function saveNotes() {
 }
 
 function updateEditorContent(event) {
-  console.log(event.target.innerHTML);
-  editor.options.content = event.target.innerHTML;
-  console.log(props.editor.options.content);
+  console.log(editor.value.options);
+  editor.value.options.content = event.target.innerHTML;
 }
 
-/* loadNotes(); */
+loadNotes();
 </script>
 
 <template>
@@ -75,9 +81,10 @@ function updateEditorContent(event) {
   <AppNotes
     :filtered-noted="filteredNoted"
     :notes="notes"
+    :editor="editor"
     :show-note-editor="showNoteEditor"
     @noteClick="noteClick"
-    @deleteNote="saveNotes()"
+    @saveNotes="saveNotes"
   />
   <AppNoteEditor
     v-if="showNoteEditor"
@@ -87,7 +94,7 @@ function updateEditorContent(event) {
     :selected-note="selectedNote"
     :editor="editor"
     @closeNoteEditor="closeNoteEditor()"
-    @updateEditorContent="updateEditorContent()"
+    @updateEditorContent="updateEditorContent"
   />
   <button class="app__note-editor-button" @click="openNewNoteEdtior()">
     <span class="material-symbols-outlined">add</span>
@@ -111,6 +118,7 @@ function updateEditorContent(event) {
 }
 
 body {
+  background-color: var(--app-background-color);
   font-family: Ubuntu, sans-serif;
   margin: 0;
   padding: 0;
@@ -121,7 +129,7 @@ body {
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 100vh;
+  height: 100%;
   color: var(--app-text-color);
   padding: 10px;
   margin: 0;
