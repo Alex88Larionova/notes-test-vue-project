@@ -1,8 +1,6 @@
 <script setup>
-import { ref } from 'vue'
-import { EditorContent } from '@tiptap/vue-3'
-
-
+import { EditorContent } from '@tiptap/vue-3';
+import clone from 'lodash.clonedeep';
 const props = defineProps({
   notes: Array,
   showNoteEditor: Boolean,
@@ -21,16 +19,6 @@ const colorCollection = [
   { id: 6, name: 'peach', textColor: 'black', color: 'rgb(255, 119, 70)' },
   { id: 7, name: 'black', textColor: 'white', color: 'rgb(14, 18, 27)' }
 ]
-
-
-
-const noteEditor = ref({
-  title: '',
-  content: '',
-  backgroundColor: '',
-  textColor: '',
-  nameColor: ''
-})
 
 function addNoteButton() {
   emit('closeNoteEditor')
@@ -54,38 +42,37 @@ function closeNoteEditor() {
 function addNote() {
   props.notes.push({
     id: props.notes.length + 1,
-    title: noteEditor.value.title,
+    title: props.editor.title,
     content: props.editor.options.content,
-    backgroundColor: noteEditor.value.backgroundColor,
-    textColor: noteEditor.value.textColor,
-    nameColor: noteEditor.value.nameColor
+    backgroundColor: props.editor.backgroundColor,
+    textColor: props.editor.textColor,
+    nameColor: props.editor.nameColor
   })
  
 }
 
 function saveNote() {
-  props.selectedNote.title = noteEditor.value.title
+  props.selectedNote.title = props.editor.title
   props.selectedNote.content = props.editor.options.content
-  props.selectedNote.backgroundColor = noteEditor.value.backgroundColor
+  props.selectedNote.backgroundColor = props.editor.backgroundColor
   
 }
 
 function addColorButton(colorName) {
-  noteEditor.value.backgroundColor = colorCollection.find(
+  props.editor.backgroundColor = colorCollection.find(
     color => color.name === colorName
   ).color
-  noteEditor.value.textColor = colorCollection.find(
+  props.editor.textColor = colorCollection.find(
     color => color.name === colorName
   ).textColor
-  noteEditor.value.nameColor = colorCollection.find(
+  props.editor.nameColor = colorCollection.find(
     color => color.name === colorName
   ).name
 }
 
 function clearEditor() {
-  noteEditor.value.title = ''
-  noteEditor.value.content = ''
-  editor.value.options.content = ''
+  props.editor.title = ''
+  props.editor.options.content = ''
 }
 
 function loadEditor () {
@@ -93,12 +80,18 @@ function loadEditor () {
     return
   }
   else if (props.editorType === 'edit-note') {
-    noteEditor.value.title = props.selectedNote.title
-    props.editor.options.content = props.selectedNote.content
-    noteEditor.value.backgroundColor = props.selectedNote.backgroundColor
-  }
-  console.log(props.editor.options.content);
-  
+    const selectedNoteClone = clone(props.selectedNote)
+    props.editor.title = props.selectedNote.title
+    props.editor.commands.setContent(props.selectedNote.content)
+    props.editor.backgroundColor = props.selectedNote.backgroundColor
+    }
+}
+
+function addImage() {
+  const url = window.prompt('URL')
+  if (url) {
+        props.editor.chain().focus().setImage({ src: url }).run()
+      }
 }
 
 loadEditor()
@@ -119,49 +112,51 @@ loadEditor()
         v-for="item in colorCollection"
         id="app__editor-color-blue"
         class="app__editor-color"
-        type="button"
-        :style="{
+          type="button"
+            :key="item.color"
+           :style="{
           'background-color': item.color
         }"
         :class="{
           'app__editor-color--active':
-            noteEditor.backgroundColor === item.color
+            props.editor.backgroundColor === item.color
         }"
         @click="addColorButton(item.name)"
       >
     </div>
     <input
       id="app__editor-title"
-      v-model="noteEditor.title"
+      v-model="props.editor.title"
       type="text"
       placeholder="Title..."
     >
 
     <div id="app__editor-toolbar">
       <button
-        :class="{ 'is-active': editor.isActive('bold') }"
-        @click="editor.chain().focus().toggleBold().run()"
+        :class="{ 'is-active': props.editor.isActive('bold') }"
+        @click="props.editor.chain().focus().toggleBold().run()"
       >
         Bold
       </button>
       <button
-        :class="{ 'is-active': editor.isActive('OrderedList') }"
-        @click="editor.chain().focus().toggleOrderedList().run()"
+        :class="{ 'is-active': props.editor.isActive('OrderedList') }"
+        @click="props.editor.chain().focus().toggleOrderedList().run()"
       >
         OrderedList
       </button>
-      <div v-if="editor">
+      <div v-if="props.editor">
     <button @click="addImage">
       setImage
     </button>
-    <editor-content :editor="editor" />
+    <editor-content :editor="props.editor" />
+    
   </div>
     </div>
 
     <EditorContent
       id="app__editor-content"
-      :editor="editor"
-      :value="editor.options.content"
+      :editor="props.editor"
+      :value="props.editor.options.content"
       @input="emit('updateEditorContent', $event)"
       />
 

@@ -1,11 +1,11 @@
 <script setup>
-import { ref, computed, nextTick } from "vue";
-import AppSearch from "./components/AppSearch/AppSearch.vue";
-import AppNotes from "./components/AppNotes/AppNotes.vue";
-import AppNoteEditor from "./components/AppNoteEditor/AppNoteEditor.vue";
-import { useEditor } from "@tiptap/vue-3";
-import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
+import StarterKit from "@tiptap/starter-kit";
+import { useEditor } from "@tiptap/vue-3";
+import { computed, nextTick, ref } from "vue";
+import AppNoteEditor from "./components/AppNoteEditor/AppNoteEditor.vue";
+import AppNotes from "./components/AppNotes/AppNotes.vue";
+import AppSearch from "./components/AppSearch/AppSearch.vue";
 
 const editorType = ref("new-note");
 const showNoteEditor = ref(false);
@@ -19,8 +19,12 @@ const filteredNoted = computed(() =>
 );
 
 const editor = useEditor({
-  content: "<h1>Title</h1>",
+  content: "",
   extensions: [StarterKit, Image],
+  title: "",
+  backgroundColor: "",
+  textColor: "",
+  nameColor: "",
 });
 
 function noteFilter(note) {
