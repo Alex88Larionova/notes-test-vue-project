@@ -1,24 +1,15 @@
 <script setup>
-import { EditorContent } from '@tiptap/vue-3';
-import clone from 'lodash.clonedeep';
+import { EditorContent } from '@tiptap/vue-3'
+import clone from 'lodash.clonedeep'
 const props = defineProps({
   notes: Array,
   showNoteEditor: Boolean,
   selectedNote: Object,
   editorType: String, // new-note | edit-note
   editor: Object,
+  colorCollection: Array
 })
-const emit = defineEmits(['closeNoteEditor', 'noteClick'])
-
-const colorCollection = [
-  { id: 1, name: 'blue', textColor: 'black', color: 'rgb(51, 105, 255)' },
-  { id: 2, name: 'yellow', textColor: 'black', color: 'rgb(255, 218, 71)' },
-  { id: 3, name: 'white', textColor: 'black', color: 'rgb(247, 245, 245)' },
-  { id: 4, name: 'plum', textColor: 'black', color: 'rgb(174, 59, 118)' },
-  { id: 5, name: 'azure', textColor: 'black', color: 'rgb(10, 235, 175)' },
-  { id: 6, name: 'peach', textColor: 'black', color: 'rgb(255, 119, 70)' },
-  { id: 7, name: 'black', textColor: 'white', color: 'rgb(14, 18, 27)' }
-]
+const emit = defineEmits(['closeNoteEditor', 'noteClick', 'addColorButton'])
 
 function addNoteButton() {
   emit('closeNoteEditor')
@@ -37,8 +28,6 @@ function closeNoteEditor() {
   clearEditor()
 }
 
-
-
 function addNote() {
   props.notes.push({
     id: props.notes.length + 1,
@@ -48,26 +37,14 @@ function addNote() {
     textColor: props.editor.textColor,
     nameColor: props.editor.nameColor
   })
- 
+
 }
 
 function saveNote() {
   props.selectedNote.title = props.editor.title
   props.selectedNote.content = props.editor.options.content
   props.selectedNote.backgroundColor = props.editor.backgroundColor
-  
-}
 
-function addColorButton(colorName) {
-  props.editor.backgroundColor = colorCollection.find(
-    color => color.name === colorName
-  ).color
-  props.editor.textColor = colorCollection.find(
-    color => color.name === colorName
-  ).textColor
-  props.editor.nameColor = colorCollection.find(
-    color => color.name === colorName
-  ).name
 }
 
 function clearEditor() {
@@ -84,14 +61,14 @@ function loadEditor () {
     props.editor.title = props.selectedNote.title
     props.editor.commands.setContent(props.selectedNote.content)
     props.editor.backgroundColor = props.selectedNote.backgroundColor
-    }
+  }
 }
 
 function addImage() {
   const url = window.prompt('URL')
   if (url) {
-        props.editor.chain().focus().setImage({ src: url }).run()
-      }
+    props.editor.chain().focus().setImage({ src: url }).run()
+  }
 }
 
 loadEditor()
@@ -105,24 +82,25 @@ loadEditor()
     >
       &#215
     </div>
-    <h1>Note editor ({{ editorType === 'new-note' ? 'New note' : 'Edit note' }})</h1>
+    <h1>Note editor ({{ editorType === 'new-note' ? 'New' : 'Edit' }})</h1>
     <p />
     <div class="app__colors">
       <input
-        v-for="item in colorCollection"
+        v-for="item in props.colorCollection"
         id="app__editor-color-blue"
+        :key="item.color"
         class="app__editor-color"
-          type="button"
-            :key="item.color"
-           :style="{
+        type="button"
+        :style="{
           'background-color': item.color
         }"
         :class="{
           'app__editor-color--active':
             props.editor.backgroundColor === item.color
         }"
-        @click="addColorButton(item.name)"
+        @click="emit('addColorButton',item.name)"
       >
+      test {{ props.editor }}
     </div>
     <input
       id="app__editor-title"
@@ -145,12 +123,10 @@ loadEditor()
         OrderedList
       </button>
       <div v-if="props.editor">
-    <button @click="addImage">
-      setImage
-    </button>
-    <editor-content :editor="props.editor" />
-    
-  </div>
+        <button @click="addImage">
+          setImage
+        </button>
+      </div>
     </div>
 
     <EditorContent
@@ -158,7 +134,7 @@ loadEditor()
       :editor="props.editor"
       :value="props.editor.options.content"
       @input="emit('updateEditorContent', $event)"
-      />
+    />
 
     <button
       v-if="props.editorType === 'new-note'"

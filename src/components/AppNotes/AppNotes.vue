@@ -9,7 +9,7 @@ const emit = defineEmits(['noteClick'])
 
 function deleteNoteButton (noteId) {
   deleteNote(noteId)
-  emit("saveNotes");
+  emit('saveNotes')
 }
 
 function deleteNote (noteId) {
@@ -40,8 +40,10 @@ function deleteNote (noteId) {
         <div class="app__note-title">
           {{ note.title }}
         </div>
-        <div class="app__note-content" v-html='note.content'>
-          </div>
+        <div
+          class="app__note-content"
+          v-html="note.content"
+        />
       </div>
     </div>
   </div>

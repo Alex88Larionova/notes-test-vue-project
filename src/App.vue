@@ -1,86 +1,105 @@
 <script setup>
-import Image from "@tiptap/extension-image";
-import StarterKit from "@tiptap/starter-kit";
-import { useEditor } from "@tiptap/vue-3";
-import { computed, nextTick, ref } from "vue";
-import AppNoteEditor from "./components/AppNoteEditor/AppNoteEditor.vue";
-import AppNotes from "./components/AppNotes/AppNotes.vue";
-import AppSearch from "./components/AppSearch/AppSearch.vue";
+import Image from '@tiptap/extension-image'
+import StarterKit from '@tiptap/starter-kit'
+import { useEditor } from '@tiptap/vue-3'
+import { computed, nextTick, ref } from 'vue'
+import AppNoteEditor from './components/AppNoteEditor/AppNoteEditor.vue'
+import AppNotes from './components/AppNotes/AppNotes.vue'
+import AppSearch from './components/AppSearch/AppSearch.vue'
 
-const editorType = ref("new-note");
-const showNoteEditor = ref(false);
-const selectedNote = ref({});
-const search = ref("");
-const notes = ref([]);
+const editorType = ref('new-note')
+const showNoteEditor = ref(false)
+const selectedNote = ref({})
+const search = ref('')
+const notes = ref([])
+
+const colorCollection = ref([
+  { id: 1, name: 'blue', textColor: 'black', color: 'rgb(51, 105, 255)' },
+  { id: 2, name: 'yellow', textColor: 'black', color: 'rgb(255, 218, 71)' },
+  { id: 3, name: 'white', textColor: 'black', color: 'rgb(247, 245, 245)' },
+  { id: 4, name: 'plum', textColor: 'black', color: 'rgb(174, 59, 118)' },
+  { id: 5, name: 'azure', textColor: 'black', color: 'rgb(10, 235, 175)' },
+  { id: 6, name: 'peach', textColor: 'black', color: 'rgb(255, 119, 70)' },
+  { id: 7, name: 'black', textColor: 'white', color: 'rgb(14, 18, 27)' }
+])
 
 /* const notes = ref(JSON.parse(localStorage.getItem("notes"))) || ref([]); */
 const filteredNoted = computed(() =>
-  notes.value.filter((note) => noteFilter(note))
-);
+  notes.value.filter(note => noteFilter(note))
+)
 
 const editor = useEditor({
-  content: "",
+  content: '',
   extensions: [StarterKit, Image],
-  title: "",
-  backgroundColor: "",
-  textColor: "",
-  nameColor: "",
-});
+  title: '',
+  backgroundColor: '',
+  textColor: '',
+  nameColor: ''
+})
 
 function noteFilter(note) {
-  const isEmpty = search.value === "";
-  const titleMatch = note.title.includes(search.value);
-  const contentMatch = note.content.includes(search.value);
-  const colorMatch = note.nameColor.includes(search.value);
-  return isEmpty || titleMatch || contentMatch || colorMatch;
+  const isEmpty = search.value === ''
+  const titleMatch = note.title?.includes(search.value)
+  const contentMatch = note.content?.includes(search.value)
+  const colorMatch = note.nameColor?.includes(search.value)
+  return isEmpty || titleMatch || contentMatch || colorMatch
+}
+
+
+function addColorButton(colorName) {
+  const colorCollectionItem = colorCollection.value.find(color => color.name === colorName)
+  editor.backgroundColor = colorCollectionItem?.color
+  editor.textColor = colorCollectionItem?.textColor
+  editor.nameColor = colorCollectionItem?.name
 }
 
 function noteClick(event) {
-  selectedNote.value = event;
-  editorType.value = "edit-note";
-  showNoteEditor.value = true;
+  selectedNote.value = event
+  editorType.value = 'edit-note'
+  showNoteEditor.value = true
 }
 
 function openNewNoteEdtior() {
-  editorType.value = "new-note";
-  showNoteEditor.value = true;
+  editorType.value = 'new-note'
+  showNoteEditor.value = true
 }
 
 function loadNotes() {
-  notes.value = getNotes();
+  notes.value = getNotes()
 }
 
 function closeNoteEditor() {
-  showNoteEditor.value = false;
-  saveNotes();
+  showNoteEditor.value = false
+  saveNotes()
 }
 
 function getNotes() {
-  const notes = JSON.parse(localStorage.getItem("notes"));
-  console.log(notes);
+  const notes = JSON.parse(localStorage.getItem('notes'))
+  console.log(notes)
   if (notes?.length > 0) {
-    return notes;
+    return notes
   } else {
-    return [];
+    return []
   }
 }
 
 function saveNotes() {
   nextTick(() => {
-    localStorage.setItem("notes", JSON.stringify(notes.value));
-  });
+    localStorage.setItem('notes', JSON.stringify(notes.value))
+  })
 }
 
 function updateEditorContent(event) {
-  console.log(editor.value.options);
-  editor.value.options.content = event.target.innerHTML;
+  editor.value.options.content = event.target.innerHTML
 }
 
-loadNotes();
+loadNotes()
 </script>
 
 <template>
-  <div class="app__title">Notes</div>
+  <div class="app__title">
+    Notes
+  </div>
   <AppSearch v-model="search" />
   <AppNotes
     :filtered-noted="filteredNoted"
@@ -97,10 +116,15 @@ loadNotes();
     :editor-type="editorType"
     :selected-note="selectedNote"
     :editor="editor"
+    :color-collection="colorCollection"
     @closeNoteEditor="closeNoteEditor()"
     @updateEditorContent="updateEditorContent"
+    @addColorButton="addColorButton"
   />
-  <button class="app__note-editor-button" @click="openNewNoteEdtior()">
+  <button
+    class="app__note-editor-button"
+    @click="openNewNoteEdtior()"
+  >
     <span class="material-symbols-outlined">add</span>
   </button>
 </template>
