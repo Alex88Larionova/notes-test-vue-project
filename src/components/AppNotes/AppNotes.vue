@@ -5,7 +5,7 @@ const props = defineProps({
   showNoteEditor: Boolean
 })
 
-const emit = defineEmits(['noteClick'])
+const emit = defineEmits(['noteClick', 'cloneNote'])
 
 function deleteNoteButton (noteId) {
   deleteNote(noteId)
@@ -37,6 +37,13 @@ function deleteNote (noteId) {
         >
           &#215
         </button>
+        <!-- <button
+          class="app__note-delete-button"
+          @click.stop="emit('cloneNote', note)"
+        >
+          clone
+        </button> -->
+        {{ note.date }}
         <div class="app__note-title">
           {{ note.title }}
         </div>

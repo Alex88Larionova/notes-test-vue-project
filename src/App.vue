@@ -2,6 +2,7 @@
 import Image from '@tiptap/extension-image'
 import StarterKit from '@tiptap/starter-kit'
 import { useEditor } from '@tiptap/vue-3'
+import clone from 'lodash.clonedeep'
 import { computed, nextTick, ref } from 'vue'
 import AppNoteEditor from './components/AppNoteEditor/AppNoteEditor.vue'
 import AppNotes from './components/AppNotes/AppNotes.vue'
@@ -34,23 +35,55 @@ const editor = useEditor({
   title: '',
   backgroundColor: '',
   textColor: '',
-  nameColor: ''
+  nameColor: '',
+  date: ''
 })
 
 function noteFilter(note) {
   const isEmpty = search.value === ''
-  const titleMatch = note.title?.includes(search.value)
-  const contentMatch = note.content?.includes(search.value)
-  const colorMatch = note.nameColor?.includes(search.value)
+  const titleMatch = note.value?.title.includes(search.value)
+  const contentMatch = note.value?.content.includes(search.value)
+  const colorMatch = note.value?.nameColor.includes(search.value)
   return isEmpty || titleMatch || contentMatch || colorMatch
 }
 
+function newNote() {
+  notes.value.push({
+    id: notes.value.length + 1,
+    title: editor.value.title,
+    content: editor.value.options.content,
+    backgroundColor: editor.value.backgroundColor,
+    textColor: editor.value.textColor,
+    nameColor: editor.value.nameColor,
+    date: getDate()
+  })
+  console.log(note.title)
+
+}
+
+function saveNote() {
+  selectedNote.value.title = editor.value.title
+  selectedNote.value.content = editor.value.options.content
+  selectedNote.value.backgroundColor = editor.value.backgroundColor
+
+}
+
+function clearEditor() {
+  editor.value.title = ''
+  editor.value.options.content = ''
+}
+
+function loadSelectedNote(){
+  editor.value.title = selectedNote.value.title
+  editor.value.commands.setContent(selectedNote.value.content)
+  editor.value.backgroundColor = selectedNote.value.backgroundColor
+}
 
 function addColorButton(colorName) {
   const colorCollectionItem = colorCollection.value.find(color => color.name === colorName)
-  editor.backgroundColor = colorCollectionItem?.color
-  editor.textColor = colorCollectionItem?.textColor
-  editor.nameColor = colorCollectionItem?.name
+  editor.value.backgroundColor = colorCollectionItem?.color
+  editor.value.textColor = colorCollectionItem?.textColor
+  editor.value.nameColor = colorCollectionItem?.name
 }
 
 function noteClick(event) {
@@ -58,6 +91,7 @@ function noteClick(event) {
   editorType.value = 'edit-note'
   showNoteEditor.value = true
 }
+
 
 function openNewNoteEdtior() {
   editorType.value = 'new-note'
@@ -93,6 +127,17 @@ function updateEditorContent(event) {
   editor.value.options.content = event.target.innerHTML
 }
 
+function cloneNote(note) {
+  notes.value.push(clone(note))
+}
+
+function getDate() {
+  const currentDate = new Date()
+  const hours = currentDate.getHours()
+  const minutes = currentDate.getMinutes()
+  return `${hours}:${minutes}`
+}
+
 loadNotes()
 </script>
 
@@ -108,6 +153,7 @@ loadNotes()
     :show-note-editor="showNoteEditor"
     @noteClick="noteClick"
     @saveNotes="saveNotes"
+    @cloneNote="cloneNote"
   />
   <AppNoteEditor
     v-if="showNoteEditor"
@@ -120,6 +166,11 @@ loadNotes()
     @closeNoteEditor="closeNoteEditor()"
     @updateEditorContent="updateEditorContent"
     @addColorButton="addColorButton"
+    @newNote="newNote"
+    @saveNote="saveNote"
+    @clearEditor="clearEditor"
+    @loadSelectedNote="loadSelectedNote"
+    @setTitle="editor.title=$event"
   />
   <button
     class="app__note-editor-button"

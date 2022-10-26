@@ -1,6 +1,5 @@
 <script setup>
 import { EditorContent } from '@tiptap/vue-3'
-import clone from 'lodash.clonedeep'
 const props = defineProps({
   notes: Array,
   showNoteEditor: Boolean,
@@ -9,47 +8,23 @@ const props = defineProps({
   editor: Object,
   colorCollection: Array
 })
-const emit = defineEmits(['closeNoteEditor', 'noteClick', 'addColorButton'])
+const emit = defineEmits(['closeNoteEditor', 'noteClick', 'addColorButton', 'newNote', 'saveNote', 'clearEditor', 'loadSelectedNote', 'setTitle'])
 
 function addNoteButton() {
   emit('closeNoteEditor')
-  addNote()
-  clearEditor()
+  emit('newNote')
+  emit('clearEditor')
 }
 
 function editNoteButton() {
   emit('closeNoteEditor')
-  saveNote()
-  clearEditor()
+  emit('saveNote')
+  emit('clearEditor')
 }
 
 function closeNoteEditor() {
   emit('closeNoteEditor')
-  clearEditor()
-}
-
-function addNote() {
-  props.notes.push({
-    id: props.notes.length + 1,
-    title: props.editor.title,
-    content: props.editor.options.content,
-    backgroundColor: props.editor.backgroundColor,
-    textColor: props.editor.textColor,
-    nameColor: props.editor.nameColor
-  })
-
-}
-
-function saveNote() {
-  props.selectedNote.title = props.editor.title
-  props.selectedNote.content = props.editor.options.content
-  props.selectedNote.backgroundColor = props.editor.backgroundColor
-
-}
-
-function clearEditor() {
-  props.editor.title = ''
-  props.editor.options.content = ''
+  emit('clearEditor')
 }
 
 function loadEditor () {
@@ -57,10 +32,7 @@ function loadEditor () {
     return
   }
   else if (props.editorType === 'edit-note') {
-    const selectedNoteClone = clone(props.selectedNote)
-    props.editor.title = props.selectedNote.title
-    props.editor.commands.setContent(props.selectedNote.content)
-    props.editor.backgroundColor = props.selectedNote.backgroundColor
+    emit('loadSelectedNote')
   }
 }
 
@@ -100,13 +72,13 @@ loadEditor()
         }"
         @click="emit('addColorButton',item.name)"
       >
-      test {{ props.editor }}
     </div>
     <input
       id="app__editor-title"
-      v-model="props.editor.title"
+      :value="props.editor.title"
       type="text"
       placeholder="Title..."
+      @input="emit('setTitle', $event)"
     >
 
     <div id="app__editor-toolbar">
