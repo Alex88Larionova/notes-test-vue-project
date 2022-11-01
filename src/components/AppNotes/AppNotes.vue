@@ -5,7 +5,7 @@ const props = defineProps({
   showNoteEditor: Boolean
 })
 
-const emit = defineEmits(['noteClick', 'cloneNote'])
+const emit = defineEmits(['noteClick', 'cloneNote', 'saveNotes'])
 
 function deleteNoteButton (noteId) {
   deleteNote(noteId)

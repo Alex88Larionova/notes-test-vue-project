@@ -8,7 +8,7 @@ const props = defineProps({
   editor: Object,
   colorCollection: Array
 })
-const emit = defineEmits(['closeNoteEditor', 'noteClick', 'addColorButton', 'newNote', 'saveNote', 'clearEditor', 'loadSelectedNote', 'setTitle'])
+const emit = defineEmits(['closeNoteEditor', 'noteClick', 'addColorButton', 'newNote', 'saveEditedNote', 'clearEditor', 'loadSelectedNote', 'setTitle', 'updateEditorContent'])
 
 function addNoteButton() {
   emit('closeNoteEditor')
@@ -18,8 +18,8 @@ function addNoteButton() {
 
 function editNoteButton() {
   emit('closeNoteEditor')
-  emit('saveNote')
-  emit('clearEditor')
+  emit('saveEditedNote')
+  /* emit('clearEditor') */
 }
 
 function closeNoteEditor() {
@@ -80,7 +80,6 @@ loadEditor()
       placeholder="Title..."
       @input="emit('setTitle', $event)"
     >
-
     <div id="app__editor-toolbar">
       <button
         :class="{ 'is-active': props.editor.isActive('bold') }"

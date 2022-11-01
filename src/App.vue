@@ -57,14 +57,14 @@ function newNote() {
     nameColor: editor.value.nameColor,
     date: getDate()
   })
-  console.log(note.title)
-
 }
 
-function saveNote() {
+function saveEditedNote() {
   selectedNote.value.title = editor.value.title
   selectedNote.value.content = editor.value.options.content
   selectedNote.value.backgroundColor = editor.value.backgroundColor
+  selectedNote.value.textColor = editor.value.textColor
+  console.log(editor.value.options.content)
 
 }
 
@@ -109,7 +109,6 @@ function closeNoteEditor() {
 
 function getNotes() {
   const notes = JSON.parse(localStorage.getItem('notes'))
-  console.log(notes)
   if (notes?.length > 0) {
     return notes
   } else {
@@ -137,6 +136,8 @@ function getDate() {
   const minutes = currentDate.getMinutes()
   return `${hours}:${minutes}`
 }
+
+
 
 loadNotes()
 </script>
@@ -167,10 +168,10 @@ loadNotes()
     @updateEditorContent="updateEditorContent"
     @addColorButton="addColorButton"
     @newNote="newNote"
-    @saveNote="saveNote"
+    @saveEditedNote="saveEditedNote"
     @clearEditor="clearEditor"
     @loadSelectedNote="loadSelectedNote"
-    @setTitle="editor.title=$event"
+    @setTitle="editor.title=$event.target.value"
   />
   <button
     class="app__note-editor-button"
