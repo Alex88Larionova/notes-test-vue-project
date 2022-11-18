@@ -1,5 +1,6 @@
 <script setup>
 import { EditorContent } from '@tiptap/vue-3'
+import { nextTick } from 'vue'
 const props = defineProps({
   notes: Array,
   showNoteEditor: Boolean,
@@ -41,6 +42,9 @@ function addImage() {
   if (url) {
     props.editor.chain().focus().setImage({ src: url }).run()
   }
+}
+function test() {
+  nextTick(() => console.log(props.editor))
 }
 
 loadEditor()
@@ -104,7 +108,7 @@ loadEditor()
       id="app__editor-content"
       :editor="props.editor"
       :value="props.editor.options.content"
-      @input="emit('updateEditorContent', $event)"
+      @input="test"
     />
 
     <button

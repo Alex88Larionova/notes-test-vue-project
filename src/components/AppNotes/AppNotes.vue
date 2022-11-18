@@ -1,4 +1,30 @@
 <script setup>
+import { onMounted } from 'vue'
+
+onMounted(() => {
+
+  const options = {}
+  const observer = new IntersectionObserver(handleIntersect, options)
+  const notes = document.querySelectorAll('.app__note')
+
+  notes.forEach(note => {
+    observer.observe(note)
+  })
+
+  function handleIntersect(events) {
+
+    const notes = document.querySelectorAll('.app__note')
+
+    events.forEach(element => {
+      if(element.isIntersecting){
+        element.target.classList.add('visible')
+      }
+    })
+
+  }
+
+})
+
 const props = defineProps({
   filteredNoted: Array,
   notes: Array,
@@ -69,6 +95,7 @@ function deleteNote (noteId) {
 }
 
 .app__note {
+  transform: translateY(60px);
   cursor: pointer;
   width: 200px;
   min-height: 200px;
@@ -109,6 +136,11 @@ margin: 0;
 font-size: 18px;
 margin-bottom: 15px;
 margin-top: 0;
+}
+
+.visible {
+    transform: translateY(0px);
+    transition: all 1s ease;
 }
 </style>
 

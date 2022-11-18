@@ -41,9 +41,9 @@ const editor = useEditor({
 
 function noteFilter(note) {
   const isEmpty = search.value === ''
-  const titleMatch = note.value?.title.includes(search.value)
-  const contentMatch = note.value?.content.includes(search.value)
-  const colorMatch = note.value?.nameColor.includes(search.value)
+  const titleMatch = note.title?.includes?.(search.value)
+  const contentMatch = note.content?.includes?.(search.value)
+  const colorMatch = note.nameColor?.includes(search.value)
   return isEmpty || titleMatch || contentMatch || colorMatch
 }
 
