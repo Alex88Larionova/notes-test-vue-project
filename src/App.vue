@@ -57,6 +57,11 @@ function newNote() {
     nameColor: editor.value.nameColor,
     date: getDate()
   })
+  nextTick(() => {
+    const notesElements = document.querySelectorAll('.app__note')
+    const lastNoteElement = notesElements[notesElements.length - 1]
+    lastNoteElement.classList.add('visible')
+  })
 }
 
 function saveEditedNote() {
